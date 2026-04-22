@@ -12,7 +12,7 @@ public class ConverterApp extends JFrame {
     private boolean isDarkTheme = true;
 
     public ConverterApp() {
-        setTitle("Number Converter Pro");
+        setTitle("Конвертер систем числення 3000");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel(new GridLayout(8, 1, 12, 12));
