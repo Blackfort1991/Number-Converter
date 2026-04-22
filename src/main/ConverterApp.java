@@ -14,7 +14,12 @@ public class ConverterApp extends JFrame {
     public ConverterApp() {
         setTitle("Конвертер систем числення 3000");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        try {
+            ImageIcon img = new ImageIcon(getClass().getResource("/icon.png"));
+            setIconImage(img.getImage());
+        } catch (Exception e) {
+            System.out.println("Іконку не знайдено!");
+        }
         JPanel mainPanel = new JPanel(new GridLayout(8, 1, 12, 12));
         mainPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
         setContentPane(mainPanel);
