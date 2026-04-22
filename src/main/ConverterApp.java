@@ -1,49 +1,75 @@
 package main;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.math.BigInteger;
 
 public class ConverterApp extends JFrame {
-    
-    public ConverterApp() {
-        // Налаштування головного вікна
-        setTitle("Конвертер систем числення");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(6, 1, 10, 10)); // 6 рядків з відступами
 
-        // Створюємо компоненти
+    private boolean isDarkTheme = true;
+
+    public ConverterApp() {
+        setTitle("Number Converter Pro");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JPanel mainPanel = new JPanel(new GridLayout(8, 1, 12, 12));
+        mainPanel.setBorder(new EmptyBorder(25, 30, 25, 30));
+        setContentPane(mainPanel);
+
+        JPanel themePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton themeButton = new JButton("Light Theme");
+        themeButton.putClientProperty("JButton.buttonType", "roundRect");
+        themeButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        themeButton.setPreferredSize(new Dimension(180, 38)); 
+        themeButton.setToolTipText("Перемкнути тему");
+
+        themeButton.addActionListener(e -> toggleTheme(themeButton));
+
+        themePanel.add(themeButton);
+        mainPanel.add(themePanel);   
+
+        mainPanel.add(new JLabel(""));   
+
+        JLabel inputLabel = new JLabel("Вхідні дані:");
+        inputLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
         JTextField inputField = new JTextField();
-        // Створюємо масив для вибору систем (від 2 до 36)
+        inputField.putClientProperty("JTextField.placeholderText", "Введіть число тут...");
+
         Integer[] bases = {2, 3, 4, 5, 8, 10, 12, 16, 20, 36};
         JComboBox<Integer> fromBase = new JComboBox<>(bases);
         JComboBox<Integer> toBase = new JComboBox<>(bases);
-        fromBase.setSelectedItem(10); // По замовчуванню з 10-ї
-        toBase.setSelectedItem(2);    // По замовчуванню в 2-гу
+        fromBase.setSelectedItem(10);
+        toBase.setSelectedItem(2);
 
         JButton convertBtn = new JButton("КОНВЕРТУВАТИ");
+        convertBtn.putClientProperty("JButton.buttonType", "roundRect");
+        convertBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+
         JTextField resultField = new JTextField();
         resultField.setEditable(false);
-        resultField.setFont(new Font("Monospaced", Font.BOLD, 14));
+        resultField.setFont(new Font("JetBrains Mono", Font.BOLD, 17));
+        resultField.setHorizontalAlignment(JTextField.CENTER);
 
-        // Додаємо елементи на вікно
-        add(new JLabel(" Введіть цле число:"));
-        add(inputField);
-        
-        JPanel p = new JPanel(new GridLayout(1, 2));
-        p.add(new JLabel(" З системи:"));
-        p.add(new JLabel(" В систему:"));
-        add(p);
+        mainPanel.add(inputLabel);
+        mainPanel.add(inputField);
 
-        JPanel comboPanel = new JPanel(new GridLayout(1, 2));
+        JPanel labelsPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        labelsPanel.add(new JLabel("З системи:"));
+        labelsPanel.add(new JLabel("В систему:"));
+        mainPanel.add(labelsPanel);
+
+        JPanel comboPanel = new JPanel(new GridLayout(1, 2, 10, 0));
         comboPanel.add(fromBase);
         comboPanel.add(toBase);
-        add(comboPanel);
+        mainPanel.add(comboPanel);
 
-        add(convertBtn);
-        add(resultField);
+        mainPanel.add(convertBtn);
+        mainPanel.add(resultField);
 
-        // Логіка кнопки
         convertBtn.addActionListener(e -> {
             try {
                 String input = inputField.getText().trim();
@@ -51,28 +77,70 @@ public class ConverterApp extends JFrame {
 
                 int b1 = (int) fromBase.getSelectedItem();
                 int b2 = (int) toBase.getSelectedItem();
-                
-                // Основна логіка перетворення
+
                 BigInteger number = new BigInteger(input, b1);
                 String result = number.toString(b2).toUpperCase();
-                
+
                 resultField.setText(result);
-                resultField.setForeground(new Color(0, 100, 0)); // Темно-зелений для успіху
+                resultField.setForeground(isDarkTheme ?
+                        new Color(144, 238, 144) :
+                        new Color(0, 130, 0));
+
             } catch (Exception ex) {
-                resultField.setText("Помилка: невірні дані!");
-                resultField.setForeground(Color.RED);
+                resultField.setText("Помилка даних!");
+                resultField.setForeground(new Color(220, 80, 80));
             }
         });
 
-        // Фінальні налаштування вікна
-        setSize(400, 450);
+        pack();
+        setSize(430, 560);           
         setLocationRelativeTo(null);
+
+        applyTheme();
+    }
+
+    private void toggleTheme(JButton themeButton) {
+        isDarkTheme = !isDarkTheme;
+        applyTheme();
+
+        if (isDarkTheme) {
+            themeButton.setText("Light Theme");
+        } else {
+            themeButton.setText("Dark Theme");
+        }
+    }
+
+    private void applyTheme() {
+        try {
+            if (isDarkTheme) {
+                FlatDarkLaf.setup();
+            } else {
+                FlatLightLaf.setup();
+            }
+
+            SwingUtilities.updateComponentTreeUI(this);
+
+            UIManager.put("Button.arc", 12);
+            UIManager.put("Component.arc", 10);
+            UIManager.put("TextComponent.arc", 10);
+
+        } catch (Exception ex) {
+            System.err.println("Не вдалося змінити тему: " + ex.getMessage());
+        }
     }
 
     public static void main(String[] args) {
-        // Запуск програми
-        SwingUtilities.invokeLater(() -> {
-            new ConverterApp().setVisible(true);
-        });
+        try {
+            FlatDarkLaf.setup();
+
+            UIManager.put("Button.arc", 12);
+            UIManager.put("Component.arc", 10);
+            UIManager.put("TextComponent.arc", 10);
+
+        } catch (Exception ex) {
+            System.err.println("Не вдалося запустити FlatLaf");
+        }
+
+        SwingUtilities.invokeLater(() -> new ConverterApp().setVisible(true));
     }
 }
