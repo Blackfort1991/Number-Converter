@@ -27,7 +27,7 @@ public class ConverterApp extends JFrame {
         resultField.setFont(new Font("Monospaced", Font.BOLD, 14));
 
         // Додаємо елементи на вікно
-        add(new JLabel(" Введіть ціле число:"));
+        add(new JLabel(" Введіть цле число:"));
         add(inputField);
         
         JPanel p = new JPanel(new GridLayout(1, 2));
